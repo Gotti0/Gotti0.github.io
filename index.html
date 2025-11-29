@@ -41,7 +41,7 @@
 
             <!-- Selection Grid -->
             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 ml-1">목표 달성 조건 선택</h3>
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
                 <!-- Buttons -->
                 <button onclick="runSim(1, 'char', '명함 (1장)')" class="sim-btn group relative p-4 rounded-xl border-2 border-slate-100 hover:border-indigo-300 hover:shadow-md text-left bg-white">
                     <div class="text-2xl mb-1">🃏</div>
@@ -71,6 +71,12 @@
                     <div class="text-2xl mb-1">🐾</div>
                     <div class="font-bold text-slate-700 group-hover:text-emerald-600">펫 5초월</div>
                     <div class="text-xs text-slate-400">펫 6회 (저렴)</div>
+                </button>
+
+                <button onclick="runCustomSim()" class="sim-btn group relative p-4 rounded-xl border-2 border-slate-100 hover:border-purple-300 hover:shadow-md text-left bg-white">
+                    <div class="text-2xl mb-1">⚙️</div>
+                    <div class="font-bold text-slate-700 group-hover:text-purple-600">커스텀</div>
+                    <div class="text-xs text-slate-400">직접 설정</div>
                 </button>
             </div>
 
@@ -121,6 +127,33 @@
 
     <script>
         let chartInstance = null;
+
+        function runCustomSim() {
+            const countStr = prompt("목표 획득 횟수를 입력하세요 (숫자만):");
+            if (!countStr) return;
+            const count = parseInt(countStr);
+            if (isNaN(count) || count <= 0) {
+                alert("유효한 숫자를 입력해주세요.");
+                return;
+            }
+
+            const isPet = confirm("펫 소환으로 계산할까요?\n(확인: 펫 / 취소: 캐릭터)");
+            const type = isPet ? 'pet' : 'char';
+            const label = isPet ? '펫' : '캐릭터';
+
+            // UI Update
+            document.querySelectorAll('.sim-btn').forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-indigo-500', 'bg-indigo-50');
+            });
+            event.currentTarget.classList.add('ring-2', 'ring-indigo-500', 'bg-indigo-50');
+
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('resultsArea').classList.add('hidden');
+
+            setTimeout(() => {
+                calculate(count, type, `커스텀 (${label} ${count}회)`);
+            }, 50);
+        }
 
         function runSim(targetCopies, type, title) {
             // UI Update
